@@ -1,0 +1,59 @@
+{% extends "base.html.twig" %}
+{% block title %}Home
+{% endblock %}
+{% block content %}
+
+	<div class="row">
+		<div class="col-md-12 d-flex justify-content-end p-3">
+			<button class="btn btn-primary btn-sm" onclick="window.location.href='/customers/new'">
+				<i class="fa fa-plus"></i>
+			</button>
+		</div>
+		<div class="col-md-12 p-3">
+			<table class="table table-bordered" id="customerTable">
+				<thead>
+					<tr>
+						<td>#</td>
+						<td>First Name</td>
+						<td>Last Name</td>
+						<td>Email</td>
+						<td>Phone Number</td>
+						<td>Action</td>
+					</tr>
+				</thead>
+				<tbody>
+					{% set i = 0 %}
+					{% for customer in data %}
+						{% set i = i+ 1 %}
+						<tr>
+							<td>{{i}}</td>
+							<td>{{ customer.getFirstName }}</td>
+							<td>{{ customer.getLastName }}</td>
+							<td>{{ customer.getEmail }}</td>
+							<td>{{ customer.getPhoneNumber }}</td>
+							<td class="d-flex flex-row justify-content-around">
+								<button class="btn btn-primary btn-sm" onclick="window.location.href='/customers/{{ customer.getId }}/edit'">
+									<i class="fa fa-pencil"></i>
+								</button>
+								<form action="/customers/{{customer.id}}" name="delete_customer_form" method="post">
+								<input type="hidden" name="_method" value="DELETE">
+								<button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Do you want to delete {{ customer.getFirstName }}.') ? true : false ;">
+									<i class="fa fa-trash"></i>
+								</button>
+								</form>
+							</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+
+		</div>
+
+	</div>
+
+	<script>
+	$(function() {
+		$('#customerTable').dataTable();
+	});
+	</script>
+{% endblock %}

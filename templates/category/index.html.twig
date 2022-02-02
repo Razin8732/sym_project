@@ -1,0 +1,96 @@
+{% extends "base.html.twig" %}
+{% block title %}Cateogry
+{% endblock %}
+{% block content %}
+
+	<div class="row">
+		<div class="col-md-12 d-flex justify-content-end p-3">
+			<button class="btn btn-primary btn-sm" onclick="window.location.href='/category/new'">
+				<i class="fa fa-plus"></i>
+			</button>
+		</div>
+		<div class="col-md-12 p-3">
+			<table class="table table-bordered" id="categoryTable">
+				<thead>
+					<tr>
+						<td>#</td>
+						<td>Category Name</td>
+						<td>Action</td>
+					</tr>
+				</thead>
+				<tbody>
+					{% set i = 0 %}
+					{% for category in data %}
+						{% set i = i+ 1 %}
+						<tr>
+							<td>{{i}}</td>
+							<td>{{ category.getName }}</td>
+							<td class="d-flex flex-row justify-content-around">
+								<button class="btn btn-primary btn-sm" onclick="loadCategoryProducts({{category.id}})">
+									<i class="fa fa-eye"></i>
+								</button>
+								<button class="btn btn-primary btn-sm" onclick="window.location.href='/category/{{ category.getId }}/edit'">
+									<i class="fa fa-pencil"></i>
+								</button>
+								<form action="/category/{{category.id}}" name="delete_category_form" method="post">
+									<input type="hidden" name="_method" value="DELETE">
+									<button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Do you want to delete {{ category.name }}.') ? true : false ;">
+										<i class="fa fa-trash"></i>
+									</button>
+								</form>
+							</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+
+		</div>
+
+	</div>
+
+	<!-- Modal -->
+	<div class="modal fade" id="categoryProductModal" tabindex="-1" aria-labelledby="categoryProductModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="categoryProductModalLabel"><span id="categoryProductModal_categoryName"></span> All Products</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body" id="categoryProductModal_body">
+					
+				</div>
+			</div>
+		</div>
+	</div>
+	<script>
+		$(function () {
+			$('#customerTable').dataTable();
+		});
+
+		function loadCategoryProducts(category_id) {
+			$.ajax({
+				url: '/category/products/' + category_id,
+				method: 'POST',
+				data: {
+					id: category_id
+				},
+				success: function(response) {
+					var product = '<ul style="list-style-type: disclosure-closed;">';
+					if(response.products.length > 0){
+						$('#categoryProductModal_categoryName').html(response.category);
+						for (let index = 0; index < response.products.length; index++) {
+							product += "<li>" + response.products[index] + '</li>';
+						}
+						product += "</ul>";
+						$('#categoryProductModal_body').html(product);
+						$('#categoryProductModal').modal('show');
+					}
+
+				},
+				error: function(error) {
+					console.log('error: ' + error);
+				}
+			});
+		}
+	</script>
+{% endblock %}

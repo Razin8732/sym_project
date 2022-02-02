@@ -1,0 +1,105 @@
+{% extends "base.html.twig" %}
+{% block title %}Home
+{% endblock %}
+{% block content %}
+	<style>
+		li::marker {
+			display: none;
+			content: '';
+		}
+	</style>
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-4"></div>
+			<div class="col-md-4 p-3">
+				<b>
+					<h4>New Customer</h4>
+				</b>
+			</div>
+		</div>
+
+		<div
+			class="row">
+			{# <div class="col-md-4"></div> #}
+			<div class="col-md-12 p-3 border rounded">
+				{{ form_start(form) }}
+				{{ form_errors(form) }}
+				<div class="row">
+					<div class="col-md-4">
+						{{ form_label(form.firstName) }}
+						{{ form_widget(form.firstName) }}
+						<span class="text-danger">
+							{{ form_errors(form.firstName) }}
+						</span>
+					</div>
+					<div class="col-md-4">
+						{{ form_label(form.lastName) }}
+						{{ form_widget(form.lastName) }}
+						<span class="text-danger">
+							{{ form_errors(form.lastName) }}
+						</span>
+					</div>
+					<div class="col-md-4">
+						{{ form_label(form.email) }}
+						{{ form_widget(form.email) }}
+						<span class="text-danger">
+							{{ form_errors(form.email) }}
+						</span>
+					</div>
+					<div class="col-md-4">
+						{{ form_label(form.phoneNumber) }}
+						{{ form_widget(form.phoneNumber) }}
+						<span class="text-danger">
+							{{ form_errors(form.phoneNumber) }}
+						</span>
+					</div>
+					<div class="col-md-4">
+						{{ form_label(form.dob) }}
+						{{ form_widget(form.dob) }}
+						<span class="text-danger">
+							{{ form_errors(form.dob) }}
+						</span>
+					</div>
+					<div class="col-md-4">
+						{{ form_label(form.gender) }}
+						{{ form_widget(form.gender) }}
+						<span class="text-danger">
+							{{ form_errors(form.gender) }}
+						</span>
+					</div>
+					<div class="col-md-4">
+						{{ form_label(form.hobbies) }}
+						{{ form_widget(form.hobbies) }}
+						<span class="text-danger">
+							{{ form_errors(form.hobbies) }}
+						</span>
+					</div>
+					<div class="col-md-4">
+						{{ form_label(form.address) }}
+						{{ form_widget(form.address) }}
+						<span class="text-danger">
+							{{ form_errors(form.address) }}
+						</span>
+					</div>
+					<div class="form-row mt-3">
+						<div class="form-group col-md-12">
+							<div class="d-flex felx-row justify-content-center">
+								{{ form_widget(form.save) }}
+								{{ form_widget(form.cancel) }}
+							</div>
+						</div>
+					</div>
+				</div>
+				{{ form_end(form) }}
+			</div>
+
+		</div>
+	</div>
+
+	<script>
+		$(function () {
+			$('#form_dob').flatpickr({dateFormat: "Y-m-d", maxDate: "today"});
+			$('#form_hobbies').select2({'multiple': true, 'closeOnSelect': false});
+		});
+	</script>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "base.html.twig" %}
+{% block title %}Home
+{% endblock %}
+{% block content %}
+
+	<div class="d-flex flex-row p-3">
+		<div class="card">
+			<div class="card-body">
+				<a class="stretched-link text-decoration-none" href="{{ path('customer') }}">
+					<h3>Customers</h3>
+				</a>
+			</div>
+		</div>
+
+	</div>
+
+{% endblock %}

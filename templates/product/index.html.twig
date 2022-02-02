@@ -1,0 +1,55 @@
+{% extends "base.html.twig" %}
+{% block title %}Product
+{% endblock %}
+{% block content %}
+
+	<div class="row">
+		<div class="col-md-12 d-flex justify-content-end p-3">
+			<button class="btn btn-primary btn-sm" onclick="window.location.href='/product/new'">
+				<i class="fa fa-plus"></i>
+			</button>
+		</div>
+		<div class="col-md-12 p-3">
+			<table class="table table-bordered" id="productTable">
+				<thead>
+					<tr>
+						<td>#</td>
+						<td>Product Name</td>
+						<td>Category</td>
+						<td>Action</td>
+					</tr>
+				</thead>
+				<tbody>
+					{% set i = 0 %}
+					{% for product in data %}
+						{% set i = i+ 1 %}
+						<tr>
+							<td>{{i}}</td>
+							<td>{{ product.getName }}</td>
+							<td>{{ product.getCategory.getName }}</td>
+							<td class="d-flex flex-row justify-content-around">
+								<button class="btn btn-primary btn-sm" onclick="window.location.href='/product/{{ product.getId }}/edit'">
+									<i class="fa fa-pencil"></i>
+								</button>
+								<form action="/product/{{product.id}}" name="delete_product_form" method="post">
+									<input type="hidden" name="_method" value="DELETE">
+									<button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Do you want to delete {{ product.name }}.') ? true : false ;">
+										<i class="fa fa-trash"></i>
+									</button>
+								</form>
+							</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+
+		</div>
+
+	</div>
+
+	<script>
+		$(function () {
+$('#customerTable').dataTable();
+});
+	</script>
+{% endblock %}

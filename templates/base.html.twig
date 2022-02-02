@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>
+			{% block title %}Welcome!
+			{% endblock %}
+		</title>
+		<link
+		rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
+		{# Run `composer require symfony/webpack-encore-bundle` to start using Symfony UX #}
+		{% block stylesheets %}
+			{# <link rel="stylesheet" type="text/css" href="css/base.css"/> #}
+			<link
+			href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+			{# <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"/> #}
+			<link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"/>
+			<link rel="stylesheet" href="https://cdn.datatables.net/1.11.4/css/jquery.dataTables.min.css">
+			<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.9/flatpickr.min.css"/>
+			<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+		{% endblock %}
+
+		{% block javascripts %}
+			{# {{ encore_entry_script_tags('app') }} #}
+			<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+			<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+			<script src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.min.js"></script>
+			<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+			<script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.9/flatpickr.min.js"></script>
+			<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+
+			{% if app.request.get('msg') != '' %}
+				<script>
+					$(function () {
+
+swal('Info','{{ app.request.get('msg') }}', 'info');
+var uri = window.location.toString();
+if (uri.indexOf("?") > 0) {
+var clean_uri = uri.substring(0, uri.indexOf("?"));
+window.history.replaceState({}, document.title, clean_uri);
+}
+});
+				</script>
+			{% endif %}
+		{% endblock %}
+	</head>
+	<body>
+		{% block body %}
+			{% block sidebar %}
+				{# <ul>
+																																				<li><a href="{{ path('homepage') }}">Home</a></li>
+																																				{# <li><a href="{{ path('blog_index') }}">Blog</a></li>
+																																			</ul> #}
+
+				<div class="container-fluid">
+					<header class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
+						<a href="{{ path('homepage') }}" class="d-flex align-items-center mb-2 mb-lg-0 text-decoration-none">
+							Home
+						</a>
+
+						<ul
+							class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0 ">
+							{# <li>
+																																																																							<a class="nav-link px-2 link-secondary" href="{{ path('homepage') }}">Customers</a>
+																																																																						</li> #}
+							<li class="nav-item dropdown">
+								<a class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+									Customers
+								</a>
+								<ul class="dropdown-menu " aria-labelledby="navbarDarkDropdownMenuLink">
+									<li>
+										<a class="dropdown-item" href="{{ path('new_customer') }}">Add New Customer</a>
+									</li>
+									<li>
+										<a class="dropdown-item" href="{{ path('customer') }}">List Customer</a>
+									</li>
+								</ul>
+							</li>
+							<li class="nav-item dropdown">
+								<a class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+									Category
+								</a>
+								<ul class="dropdown-menu " aria-labelledby="navbarDarkDropdownMenuLink">
+									<li>
+										<a class="dropdown-item" href="{{ path('new_category') }}">Add New Category</a>
+									</li>
+									<li>
+										<a class="dropdown-item" href="{{ path('category') }}">List Category</a>
+									</li>
+								</ul>
+							</li>
+							<li class="nav-item dropdown">
+								<a class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+									Product
+								</a>
+								<ul class="dropdown-menu " aria-labelledby="navbarDarkDropdownMenuLink">
+									<li>
+										<a class="dropdown-item" href="{{ path('new_product') }}">Add New Product</a>
+									</li>
+									<li>
+										<a class="dropdown-item" href="{{ path('product') }}">List Product</a>
+									</li>
+								</ul>
+							</li>
+						</ul>
+
+						{% if not is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+							<div class="col-md-3 text-end">
+								<a type="button" class="btn btn-outline-primary me-2" href="/login">Login</a>
+								<a type="button" class="btn btn-primary" href="/register">Sign-up</a>
+							</div>
+						{% else %}
+
+							<div class="dropdown text-end">
+								<a
+									href="#" class="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+									{# <img src="https://github.com/mdo.png" alt="mdo" width="32" height="32" class="rounded-circle"> #}
+									{{ app.user.username }}
+								</a>
+								<ul class="dropdown-menu text-small" aria-labelledby="dropdownUser1" style="">
+									{# <li>
+																													<a class="dropdown-item" href="#">New project...</a>
+																												</li>
+																												<li>
+																													<a class="dropdown-item" href="#">Settings</a>
+																												</li>
+																												<li>
+																													<a class="dropdown-item" href="#">Profile</a>
+																												</li> #}
+									{# <li><hr class="dropdown-divider"></li> #}
+										<li>
+											<a class="dropdown-item" href="{{ path('app_logout') }}"> Sign out</a>
+									</li>
+								</ul>
+							</div>
+						{% endif %}
+
+					</header>
+				</div>
+			{% endblock %}
+
+			<div id="content">
+				{% block content %}{% endblock %}
+			</div>
+		{% endblock %}
+	</body>
+</html>

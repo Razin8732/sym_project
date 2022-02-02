@@ -50,3 +50,19 @@ in: config/packages/doctrine.yaml
 
 
 php bin/console make:controller CategoryController
+
+
+ALTER USER phpmyadmin IDENTIFIED WITH mysql_native_password BY '123@admin';
+
+ALTER USER 'phpmyadmin'@'%' IDENTIFIED BY '1243@Admin';
+
+
+Extension Pack for symfony:
+https://marketplace.visualstudio.com/items?itemName=duboiss.sf-pack
+
+
+
+http://localhost/phpmyadmin/sql.php?db=demo_sym_project&table=category&pos=0&sql_signature=3cd2bae9a54e39bcc99008675499b9723824e58c8321a6d55297da44e3ad1397&sql_query=SELECT+%2A+FROM+%60demo_sym_project%60.%60category%60+WHERE+%60id%60+%3D+2
+
+
+composer require symfony/security-csrf

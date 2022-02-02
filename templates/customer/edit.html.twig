@@ -3,12 +3,6 @@
 {% endblock %}
 {% block content %}
 
-	<style>
-		li::marker {
-			display: none;
-			content: '';
-		}
-	</style>
 
 	<div class="row">
 		<div class="col-md-4"></div>
@@ -23,7 +17,9 @@
 		{# <div class="col-md-4"></div> #}
 		<div class="col-md-12 p-3 border rounded">
 			{{ form_start(form) }}
+			<span class="text-danger">
 			{{ form_errors(form) }}
+			</span>
 			<div class="row">
 				<div class="col-md-4">
 					{{ form_label(form.firstName) }}

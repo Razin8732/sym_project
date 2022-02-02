@@ -3,11 +3,25 @@
 {% endblock %}
 {% block content %}
 
-	<div class="d-flex flex-row p-3">
-		<div class="card">
-			<div class="card-body">
+	<div class="d-flex flex-row p-3 justify-content-around">
+		<div class="card" style="width:15rem;">
+			<div class="card-body text-center">
 				<a class="stretched-link text-decoration-none" href="{{ path('customer') }}">
 					<h3>Customers</h3>
+				</a>
+			</div>
+		</div>
+		<div class="card">
+			<div class="card-body text-center" style="width:15rem;">
+				<a class="stretched-link text-decoration-none" href="{{ path('category') }}">
+					<h3>Categories</h3>
+				</a>
+			</div>
+		</div>
+		<div class="card">
+			<div class="card-body text-center" style="width:15rem;">
+				<a class="stretched-link text-decoration-none" href="{{ path('product') }}">
+					<h3>Products</h3>
 				</a>
 			</div>
 		</div>

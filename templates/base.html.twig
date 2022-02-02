@@ -31,19 +31,20 @@
 			<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 
-			{% if app.request.get('msg') != '' %}
 				<script>
 					$(function () {
-
-swal('Info','{{ app.request.get('msg') }}', 'info');
-var uri = window.location.toString();
-if (uri.indexOf("?") > 0) {
-var clean_uri = uri.substring(0, uri.indexOf("?"));
-window.history.replaceState({}, document.title, clean_uri);
-}
-});
+						{% if app.request.get('msg') != '' %}
+							swal('Info','{{ app.request.get('msg') }}', 'info');
+							var uri = window.location.toString();
+							if (uri.indexOf("?") > 0) {
+								var clean_uri = uri.substring(0, uri.indexOf("?"));
+								window.history.replaceState({}, document.title, clean_uri);
+							}
+						{% endif %}
+						$('.text-danger > ul').attr('style','padding-left:unset;list-style-type: none;');
+						$('table').dataTable();
+					});
 				</script>
-			{% endif %}
 		{% endblock %}
 	</head>
 	<body>

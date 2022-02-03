@@ -78,6 +78,13 @@ class Customer
      */
     private $address;
 
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    #* @Assert\NotBlank
+
+    private $image;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -179,6 +186,17 @@ class Customer
         return $this;
     }
 
+    public function getImage()
+    {
+        return $this->image;
+    }
+
+    public function setImage($image)
+    {
+        $this->image = $image;
+        return $this;
+    }
+
     public function toArray()
     {
         return [
@@ -191,6 +209,8 @@ class Customer
             'gender' => $this->getGender(),
             'hobbies' => $this->getHobbies(),
             'address' => $this->getAddress(),
+            'image' => $this->getImage(),
+
         ];
     }
 }

@@ -19,7 +19,12 @@
 			<div class="col-md-12 p-3 border rounded">
 				{{ form_start(form) }}
 				<span class="text-danger">
-				{{ form_errors(form) }}
+					{{ form_errors(form) }}
+					{# <ul>
+						{% for error in errors %}
+							<li>{{ error.message }}</li>
+						{% endfor %}
+					</ul> #}
 				</span>
 				<div class="row">
 					<div class="col-md-4">
@@ -78,6 +83,13 @@
 							{{ form_errors(form.address) }}
 						</span>
 					</div>
+					<div class="col-md-4">
+						{{ form_label(form.image) }}
+						{{ form_widget(form.image) }}
+						<span class="text-danger">
+							{{ form_errors(form.image) }}
+						</span>
+					</div>
 					<div class="form-row mt-3">
 						<div class="form-group col-md-12">
 							<div class="d-flex felx-row justify-content-center">
@@ -95,8 +107,8 @@
 
 	<script>
 		$(function () {
-			$('#form_dob').flatpickr({dateFormat: "Y-m-d", maxDate: "today"});
-			$('#form_hobbies').select2({'multiple': true, 'closeOnSelect': false});
-		});
+$('#form_dob').flatpickr({dateFormat: "Y-m-d", maxDate: "today"});
+$('#form_hobbies').select2({'multiple': true, 'closeOnSelect': false});
+});
 	</script>
 {% endblock %}

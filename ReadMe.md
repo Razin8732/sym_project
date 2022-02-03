@@ -66,3 +66,11 @@ http://localhost/phpmyadmin/sql.php?db=demo_sym_project&table=category&pos=0&sql
 
 
 composer require symfony/security-csrf
+
+
+To fix manifest.json file not found: (while using asset function intwig to show image)
+yarn add --dev @symfony/webpack-encore
+yarn add webpack-notifier --dev
+yarn encore dev
+
+

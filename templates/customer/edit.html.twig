@@ -18,7 +18,7 @@
 		<div class="col-md-12 p-3 border rounded">
 			{{ form_start(form) }}
 			<span class="text-danger">
-			{{ form_errors(form) }}
+				{{ form_errors(form) }}
 			</span>
 			<div class="row">
 				<div class="col-md-4">
@@ -77,6 +77,13 @@
 						{{ form_errors(form.address) }}
 					</span>
 				</div>
+				<div class="col-md-4">
+					{{ form_label(form.image) }}
+					{{ form_widget(form.image) }}
+					<span class="text-danger">
+						{{ form_errors(form.image) }}
+					</span>
+				</div>
 				<div class="form-row mt-3">
 					<div class="form-group col-md-12">
 						<div class="d-flex felx-row justify-content-center">
@@ -93,6 +100,13 @@
 		$(function () {
 			$('#form_dob').flatpickr({dateFormat: "Y-m-d", maxDate: "today"});
 			$('#form_hobbies').select2({'multiple': true, 'closeOnSelect': false});
+
+			var file = $('input[type="file"]');
+			var filename = file.attr('data-filename');
+			if(filename != ''){
+				$('<img src="'+ $(location).attr('protocol') +'//'+ $(location).attr('host') +'/uploads/images/' + filename + '" />').insertAfter(file);
+			}
+
 		});
 	</script>
 {% endblock %}

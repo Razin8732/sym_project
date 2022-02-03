@@ -17,10 +17,18 @@ use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\String\Slugger\SluggerInterface;
+
 
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Component\Form\FormError;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\Validator\ConstraintViolation;
 
 /**
  * @IsGranted("IS_AUTHENTICATED_FULLY")
@@ -39,16 +47,18 @@ class CustomerController extends AbstractController
     public function index(): Response
     {
         $data = $this->customerRepository->findAll();
+        $images_directory = $this->getParameter('images_directory');
         return $this->render('customer/index.html.twig', [
             'controller_name' => 'CustomerController',
             'data' => $data,
+            'images_directory' => $images_directory
         ]);
     }
 
     /**
      * @Route("/customers/new/", name="new_customer" , methods="GET|POST")
      */
-    public function showNewCustomer(Request $request, ValidatorInterface $validator)
+    public function showNewCustomer(Request $request, ValidatorInterface $validator, SluggerInterface $slugger)
     {
         $msg = $request->query->get('msg');
         $customer = new Customer;
@@ -107,6 +117,22 @@ class CustomerController extends AbstractController
                 'empty_data' => '',
                 'attr' => ['class' => 'form-control']
             ])
+            ->add('image', FileType::class, [
+                'label' => 'Image Upload',
+                'mapped' => true,
+                'required' => true,
+                'constraints' => [
+                    new File([
+                        'maxSize' => '1024k',
+                        'mimeTypes' => [
+                            'image/*'
+                        ],
+                        'mimeTypesMessage' => 'Please upload a valid image file',
+                    ])
+                ],
+                'attr' => ['class' => 'form-control']
+
+            ])
             ->add('save', SubmitType::class, [
                 'label' => 'Save',
                 'attr' => ['class' => 'btn btn-primary mx-2'],
@@ -121,21 +147,61 @@ class CustomerController extends AbstractController
 
 
         $form->handleRequest($request);
+        // $form = $form->getData();
+        // $imageFile = $form->getImage();
+        // echo "<pre>==>";
+        // print_r($imageFile);
+        // echo "</pre>";
+        // exit;
+
         if ($form->isSubmitted() && $form->isValid()) {
             // $form->getData() holds the submitted values
             // but, the original `$customer` variable will be updated
-            $form = $form->getData();
-            empty(trim($form->getFirstName())) ? true : $customer->setFirstName($form->getFirstName());
-            empty(trim($form->getLastName())) ? true : $customer->setLastName($form->getLastName());
-            empty(trim($form->getEmail())) ? true : $customer->setEmail($form->getEmail());
-            empty(trim($form->getPhoneNumber())) ? true : $customer->setPhoneNumber($form->getPhoneNumber());
-            empty($form->getDob()) ? true : $customer->setDob($form->getDob());
-            empty($form->getGender()) ? true : $customer->setGender($form->getGender());
-            empty($form->getHobbies()) ? true : $customer->setHobbies(implode(',', $form->getHobbies()));
-            empty($form->getAddress()) ? true : $customer->setAddress($form->getAddress());
+            $form_data = $form->getData();
+            empty(trim($form_data->getFirstName())) ? true : $customer->setFirstName($form_data->getFirstName());
+            empty(trim($form_data->getLastName())) ? true : $customer->setLastName($form_data->getLastName());
+            empty(trim($form_data->getEmail())) ? true : $customer->setEmail($form_data->getEmail());
+            empty(trim($form_data->getPhoneNumber())) ? true : $customer->setPhoneNumber($form_data->getPhoneNumber());
+            empty($form_data->getDob()) ? true : $customer->setDob($form_data->getDob());
+            empty($form_data->getGender()) ? true : $customer->setGender($form_data->getGender());
+            empty($form_data->getHobbies()) ? true : $customer->setHobbies(implode(',', $form_data->getHobbies()));
+            empty($form_data->getAddress()) ? true : $customer->setAddress($form_data->getAddress());
 
+            /** @var UploadedFile $imageFile */
+            $imageFile = $form_data->getImage();
 
+            if ($imageFile) {
+                $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename . '-' . uniqid() . '.' . $imageFile->guessExtension();
+
+                try {
+                    $imageFile->move(
+                        $this->getParameter('images_directory'),
+                        $newFilename
+                    );
+                    // throw new FileException('error in file upload');
+                } catch (FileException $e) {
+                    // Exeption Occured
+                    $error = new FormError("Somthing went wrong while uploading image ");
+                    $form->get('image')->addError($error);
+                    return $this->render('customer/add.html.twig', [
+                        'form' => $form->createView(),
+                    ]);
+                }
+            }
+            empty($newFilename) ? true : $customer->setImage($newFilename);
             $errors = $validator->validate($customer);
+            if (empty(trim($imageFile))) {
+                $error = new FormError("Please upload a valid image file");
+                $form->get('image')->addError($error);
+                return $this->render('customer/add.html.twig', [
+                    'form' => $form->createView(),
+                    'errors' => $errors
+                ]);
+            }
+
+            // $errors = $validator->validate($customer);
             $updateCustomer  = $this->customerRepository->saveCustomer($customer);
             return $this->redirectToRoute('customer', ['msg' => 'Customer Created Successfully']);
         }
@@ -200,7 +266,7 @@ class CustomerController extends AbstractController
     /**
      * @Route("/customers/{id}/edit", name="edit_customer" , methods="GET|PUT")
      */
-    public function showEditCustomer($id, Request $request, ValidatorInterface $validator)
+    public function showEditCustomer($id, Request $request, ValidatorInterface $validator, SluggerInterface $slugger)
     {
         $customer = $this->customerRepository->findOneBy(['id' => $id]);
         $data = [];
@@ -216,6 +282,7 @@ class CustomerController extends AbstractController
                 'hobbies' =>  empty($customer->getHobbies()) ?: explode(',', $customer->getHobbies()),
                 // 'hobbies' =>  "['" . str_replace(",", "','", $customer->getHobbies()) . "']",
                 'address' => $customer->getAddress(),
+                'image' => $customer->getImage(),
             ];
         }
         if (empty($data)) {
@@ -285,6 +352,24 @@ class CustomerController extends AbstractController
                 'data' => $data['address'],
                 'attr' => ['class' => 'form-control']
             ])
+            ->add('image', FileType::class, [
+                'label' => 'Image Upload',
+                'mapped' => true,
+                'data_class' => null,
+                'required' => false,
+                'constraints' => [
+                    new File([
+                        'maxSize' => '1024k',
+                        'mimeTypes' => [
+                            'image/*'
+                        ],
+                        'mimeTypesMessage' => 'Please upload a valid image file',
+                    ])
+                ],
+                // 'data' => $data['image'],
+                'attr' => ['class' => 'form-control', 'data-filename' => $data['image']]
+
+            ])
             ->add('save', SubmitType::class, [
                 'label' => 'Update',
                 'attr' => ['class' => 'btn btn-primary mx-2'],
@@ -313,6 +398,26 @@ class CustomerController extends AbstractController
             empty($form->getGender()) ? true : $customer->setGender($form->getGender());
             empty($form->getHobbies()) ? true : $customer->setHobbies(implode(',', $form->getHobbies()));
             empty($form->getAddress()) ? true : $customer->setAddress($form->getAddress());
+
+            /** @var UploadedFile $imageFile */
+            $imageFile = $form->getImage();
+            if ($imageFile) {
+                $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename . '-' . uniqid() . '.' . $imageFile->guessExtension();
+
+                try {
+                    $imageFile->move(
+                        $this->getParameter('images_directory'),
+                        $newFilename
+                    );
+                } catch (FileException $e) {
+                    // Exeption Occured
+                }
+                empty($newFilename) ? true : $customer->setImage($newFilename);
+            } else {
+                empty($data['image']) ? true : $customer->setImage($data['image']);
+            }
             $errors = $validator->validate($customer);
 
             $updateCustomer  = $this->customerRepository->updateCustomer($customer);

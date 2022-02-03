@@ -6,6 +6,7 @@ use App\Entity\Customer;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Filesystem\Filesystem;
 
 /**
  * @method Customer|null find($id, $lockMode = null, $lockVersion = null)
@@ -36,8 +37,14 @@ class CustomerRepository extends ServiceEntityRepository
         return $customer;
     }
 
-    public function removeCustomer(Customer $customer)
+    public function removeCustomer(Customer $customer, $images_directory)
     {
+        $imageFilename = $customer->getImage();
+        if (!empty($imageFilename)) {
+            $filesystem = new Filesystem();
+            $path = $images_directory . '/' . $imageFilename;
+            $filesystem->remove($path);
+        }
         $this->manager->remove($customer);
         $this->manager->flush();
     }

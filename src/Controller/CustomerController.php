@@ -258,7 +258,8 @@ class CustomerController extends AbstractController
     public function delete_customer($id)
     {
         $customer = $this->customerRepository->findOneBy(['id' => $id]);
-        $deleteCustomer = $this->customerRepository->removeCustomer($customer);
+        $images_directory = $this->getParameter('images_directory');
+        $deleteCustomer = $this->customerRepository->removeCustomer($customer,$images_directory);
         return $this->redirectToRoute('customer', ['msg' => 'Customer Deleted Successfully']);
         // return new JsonResponse(['status' => 'Customer deleted!'], Response::HTTP_OK);
     }

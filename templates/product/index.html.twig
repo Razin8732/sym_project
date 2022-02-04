@@ -24,7 +24,8 @@
 					{% for product in data %}
 						{% set i = i+ 1 %}
 						<tr>
-							<td>{{i}}</td>
+							{# <td>{{i}}</td> #}
+							<td>{{ product.getId }}</td>
 							<td>{{ product.getName }}</td>
 							<td>{{ product.getCategory.getName }}</td>
 							<td class="d-flex flex-row justify-content-around">

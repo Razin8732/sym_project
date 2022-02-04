@@ -27,7 +27,8 @@
 					{% for customer in data %}
 						{% set i = i+ 1 %}
 						<tr>
-							<td>{{i}}</td>
+							{# <td>{{i}}</td> #}
+							<td>{{ customer.getId }}</td>
 							<td>{{ customer.getFirstName }}</td>
 							<td>{{ customer.getLastName }}</td>
 							<td>{{ customer.getEmail }}</td>

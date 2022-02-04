@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Entity\Product;
 use App\Entity\Category;
+use App\Entity\Customer;
+use App\Repository\CustomerRepository;
 use App\Repository\ProductRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityRepository;
@@ -31,9 +33,10 @@ class ProductController extends AbstractController
 
     private $productRepository;
 
-    public function __construct(ProductRepository $productRepository)
+    public function __construct(ProductRepository $productRepository, CustomerRepository $customerRepository)
     {
         $this->productRepository = $productRepository;
+        $this->customerRepository = $customerRepository;
     }
 
     /**
@@ -74,6 +77,20 @@ class ProductController extends AbstractController
                 'label' => 'Select Category',
                 'attr' => ['class' => 'form-select']
             ])
+            ->add('customer', EntityType::class, [
+                'class' => Customer::class,
+                // 'query_builder' => function (EntityRepository $er) {
+                //     return $er->createQueryBuilder('p')
+                //         ->orderBy('p.email', 'ASC');
+                // },
+                // "empty_data"  => new ArrayCollection,
+                'choice_label' => 'email',
+                'expanded' => false,
+                'multiple' => true,
+                'label' => 'Select Cutomer',
+                // 'mapped' => false,
+                'attr' => ['class' => 'form-select'],
+            ])
             ->add('save', SubmitType::class, [
                 'label' => 'Save',
                 'attr' => ['class' => 'btn btn-primary mx-2'],
@@ -92,6 +109,7 @@ class ProductController extends AbstractController
             $form = $form->getData();
             empty(trim($form->getName())) ? true : $product->setName($form->getName());
             empty($form->getCategory()) ? true : $product->setCategory($form->getCategory());
+            empty($form->getCustomer()) ? true : $product->setCustomer($form->getCustomer());
             $errors = $validator->validate($product);
             $updateproduct  = $this->productRepository->saveproduct($product);
             return $this->redirectToRoute('product', ['msg' => 'Product Created Successfully']);
@@ -139,9 +157,22 @@ class ProductController extends AbstractController
                 // "empty_data"  => new ArrayCollection,
                 'choice_label' => 'name',
                 'expanded' => false,
-
                 'label' => 'Select Category',
                 'attr' => ['class' => 'form-select']
+            ])
+            ->add('customer', EntityType::class, [
+                'class' => Customer::class,
+                // 'query_builder' => function (EntityRepository $er) {
+                //     return $er->createQueryBuilder('p')
+                //         ->orderBy('p.email', 'ASC');
+                // },
+                // "empty_data"  => new ArrayCollection,
+                'choice_label' => 'email',
+                'expanded' => false,
+                'multiple' => true,
+                'label' => 'Select Cutomer',
+                // 'mapped' => false,
+                'attr' => ['class' => 'form-select'],
             ])
             ->add('save', SubmitType::class, [
                 'label' => 'Update Product',
@@ -149,7 +180,7 @@ class ProductController extends AbstractController
             ])
             ->add('cancel', ButtonType::class, [
                 'label' => 'Cancel',
-                'attr' => ['class' => 'btn btn-secondary mx-2']
+                'attr' => ['class' => 'btn btn-secondary mx-2', 'onClick' => 'window.location.href="/product"']
             ])
             ->setMethod('PUT')
             ->getForm();
@@ -158,6 +189,16 @@ class ProductController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $form = $form->getData();
             empty(trim($form->getName()))  ? true : $product->setName($form->getName());
+            empty($form->getCustomer()) ? true : $product->setCustomer($form->getCustomer());
+
+            // $customers = $form->getCustomer();
+            // if (!empty($customers)) {
+            //     foreach ($customers as $custo) {
+            //         $cst = $this->customerRepository->findOneBy(['id' => $custo->getId()]);
+            //         $product->setCustomer($cst);
+            //     }
+            // }
+
 
             $errors = $validator->validate($product);
             $updateproduct = $this->productRepository->updateProduct($product);

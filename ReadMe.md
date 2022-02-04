@@ -74,3 +74,8 @@ yarn add webpack-notifier --dev
 yarn encore dev
 
 
+
+for duplicate record in many to many relationship
+https://stackoverflow.com/a/54886260
+
+

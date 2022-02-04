@@ -3,10 +3,11 @@
 namespace App\Entity;
 
 use App\Repository\CustomerRepository;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-
+use App\Entity\Product;
 
 /**
  * @ORM\Entity(repositoryClass=CustomerRepository::class)
@@ -84,6 +85,22 @@ class Customer
     #* @Assert\NotBlank
 
     private $image;
+
+    /**
+     * Many Useres Has Many Products
+     * @ORM\ManyToMany(targetEntity="App\Entity\Product", inversedBy="customers")
+     * @ORM\JoinTable(name="customers_products",
+     *     joinColumns={@ORM\JoinColumn(name="customer_id", referencedColumnName="id")},
+     *     inverseJoinColumns={@ORM\JoinColumn(name="product_id", referencedColumnName="id")}
+     * )
+     */
+    #* @ORM\JoinTable(name="customers_products")
+    protected $products;
+
+    public function __construct()
+    {
+        $this->products = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -195,6 +212,24 @@ class Customer
     {
         $this->image = $image;
         return $this;
+    }
+
+    #/**
+    # * @return Collection|Product[]
+    # */
+    public function getProduct()
+    {
+        return $this->products;
+    }
+
+    public function setProduct($products)
+    {
+        // if ($this->products->contains($product)) {
+        //     return;
+        // }
+        $this->products = $products;
+        // $product->setCustomer($this);
+        // return $this;
     }
 
     public function toArray()

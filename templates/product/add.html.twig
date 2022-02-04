@@ -35,6 +35,13 @@
 							{{ form_errors(form.category) }}
 						</span>
 					</div>
+					<div class="col-md-12">
+						{{ form_label(form.customer) }}
+						{{ form_widget(form.customer) }}
+						<span class="text-danger">
+							{{ form_errors(form.customer) }}
+						</span>
+					</div>
 
 					<div class="form-row mt-3">
 						<div class="form-group col-md-12">
@@ -50,4 +57,11 @@
 
 		</div>
 	</div>
+
+	<script>
+	
+	$(function(){
+		$('#form_customer').select2({multiple:true,closeOnSelect:false });
+	})
+	</script>
 {% endblock %}
